@@ -16,6 +16,17 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# For Streamlit Cloud deployment
+try:
+    import streamlit as st
+    # Try to get secrets from Streamlit first
+    if hasattr(st, 'secrets'):
+        os.environ.setdefault('OPENAI_API_KEY', st.secrets.get('OPENAI_API_KEY', ''))
+        os.environ.setdefault('SUPABASE_URL', st.secrets.get('SUPABASE_URL', ''))
+        os.environ.setdefault('SUPABASE_KEY', st.secrets.get('SUPABASE_KEY', ''))
+except:
+    pass
+
 class DSM5Chatbot:
     def __init__(self):
         self.db = SupabaseDB()

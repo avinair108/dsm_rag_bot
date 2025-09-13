@@ -2,6 +2,15 @@ import streamlit as st
 from rag_chatbot import DSM5Chatbot
 import os
 
+# For Streamlit Cloud deployment - handle secrets
+try:
+    if hasattr(st, 'secrets'):
+        os.environ.setdefault('OPENAI_API_KEY', st.secrets.get('OPENAI_API_KEY', ''))
+        os.environ.setdefault('SUPABASE_URL', st.secrets.get('SUPABASE_URL', ''))
+        os.environ.setdefault('SUPABASE_KEY', st.secrets.get('SUPABASE_KEY', ''))
+except:
+    pass
+
 # Page config
 st.set_page_config(
     page_title="DSM-5 RAG Chatbot",
@@ -17,6 +26,15 @@ def init_chatbot():
 def main():
     st.title("🧠 DSM-5 RAG Chatbot")
     st.markdown("Ask questions about mental health diagnoses based on DSM-5 content.")
+    
+    # Check if required environment variables are set
+    required_vars = ["OPENAI_API_KEY", "SUPABASE_URL", "SUPABASE_KEY"]
+    missing_vars = [var for var in required_vars if not os.getenv(var)]
+    
+    if missing_vars:
+        st.error(f"⚠️ Missing required environment variables: {', '.join(missing_vars)}")
+        st.info("Please configure these in Streamlit Cloud secrets or your .env file")
+        st.stop()
     
     # Sidebar for document management
     with st.sidebar:
